@@ -14,25 +14,25 @@ const ChooseOptionsPage = () => {
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>Choose Your Options</h1>
+    <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-r from-green-500 to-blue-500 text-white">
+      <h1 className="text-4xl font-bold mb-6">Choose Your Options</h1>
 
-      <label>
+      <label className="mb-4">
         Number of Questions:
         <input
           type="number"
           value={numberOfQuestions}
           onChange={(e) => setNumberOfQuestions(parseInt(e.target.value))}
+          className="ml-2 p-2 rounded bg-white text-blue-500"
         />
       </label>
 
-      <br />
-
-      <label>
+      <label className="mb-4">
         Difficulty:
         <select
           value={difficulty}
           onChange={(e) => setDifficulty(e.target.value)}
+          className="ml-2 p-2 rounded bg-white text-blue-500"
         >
           <option value="easy">Easy</option>
           <option value="medium">Medium</option>
@@ -40,10 +40,9 @@ const ChooseOptionsPage = () => {
         </select>
       </label>
 
-      <br />
       <button
         onClick={startQuiz}
-        style={{ padding: "10px 20px", marginTop: "20px" }}
+        className="px-6 py-2 bg-white text-blue-500 rounded-lg shadow-lg hover:bg-gray-200 transition"
       >
         Start Quiz
       </button>

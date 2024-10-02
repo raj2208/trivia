@@ -5,13 +5,12 @@ const QuizPage = () => {
   const router = useRouter();
   const { numberOfQuestions, difficulty } = router.query;
 
-  const [questions, setQuestions] = useState<any[]>([]); // Ensure it's initialized as an array
+  const [questions, setQuestions] = useState<any[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [correctAnswer, setCorrectAnswer] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch questions from the Open Trivia API
     if (numberOfQuestions && difficulty) {
       fetch(
         `https://opentdb.com/api.php?amount=${numberOfQuestions}&difficulty=${difficulty}&type=multiple`
@@ -41,17 +40,21 @@ const QuizPage = () => {
     }
   };
 
-  // Return a loading state until the questions are fetched
   if (!questions || questions.length === 0) {
-    return <div>Loading...</div>;
+    return <div className="text-center">Loading...</div>;
   }
 
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>Question {currentQuestionIndex + 1}</h1>
-      <p dangerouslySetInnerHTML={{ __html: currentQuestion.question }} />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+      <h1 className="text-4xl font-bold mb-6">
+        Question {currentQuestionIndex + 1}
+      </h1>
+      <p
+        className="mb-6"
+        dangerouslySetInnerHTML={{ __html: currentQuestion.question }}
+      />
 
       {currentQuestion.incorrect_answers
         .concat(currentQuestion.correct_answer)
@@ -60,17 +63,14 @@ const QuizPage = () => {
             key={index}
             onClick={() => handleAnswerClick(answer)}
             disabled={selectedAnswer !== null}
-            style={{
-              display: "block",
-              margin: "10px auto",
-              padding: "10px 20px",
-              backgroundColor:
-                selectedAnswer === answer
-                  ? answer === correctAnswer
-                    ? "green"
-                    : "red"
-                  : "white",
-            }}
+            className={`mb-4 w-full px-6 py-2 rounded-lg shadow-lg transition 
+            ${
+              selectedAnswer === answer
+                ? answer === correctAnswer
+                  ? "bg-green-500"
+                  : "bg-red-500"
+                : "bg-white text-blue-500 hover:bg-gray-200"
+            }`}
           >
             <span dangerouslySetInnerHTML={{ __html: answer }} />
           </button>
@@ -79,7 +79,7 @@ const QuizPage = () => {
       {selectedAnswer && (
         <button
           onClick={nextQuestion}
-          style={{ padding: "10px 20px", marginTop: "20px" }}
+          className="px-6 py-2 bg-white text-blue-500 rounded-lg shadow-lg hover:bg-gray-200 transition"
         >
           {currentQuestionIndex < questions.length - 1 ? "Next" : "Finish Quiz"}
         </button>

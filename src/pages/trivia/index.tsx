@@ -8,11 +8,11 @@ const WelcomePage = () => {
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>Welcome to the Trivia Game!</h1>
+    <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+      <h1 className="text-4xl font-bold mb-6">Welcome to the Trivia Game!</h1>
       <button
         onClick={goToOptions}
-        style={{ padding: "10px 20px", marginTop: "20px" }}
+        className="px-6 py-2 bg-white text-blue-500 rounded-lg shadow-lg hover:bg-gray-200 transition"
       >
         Choose Options
       </button>

@@ -4,12 +4,12 @@ const ScorePage = () => {
   const router = useRouter();
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>Quiz Completed!</h1>
-      <p>Well done! You scored X out of Y!</p>
+    <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-r from-red-500 to-yellow-500 text-white">
+      <h1 className="text-4xl font-bold mb-6">Quiz Completed!</h1>
+      <p className="text-lg">Well done! You scored X out of Y!</p>
       <button
         onClick={() => router.push("/trivia")}
-        style={{ padding: "10px 20px", marginTop: "20px" }}
+        className="mt-4 px-6 py-2 bg-white text-red-500 rounded-lg shadow-lg hover:bg-gray-200 transition"
       >
         Try Again
       </button>
