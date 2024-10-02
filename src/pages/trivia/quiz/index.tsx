@@ -10,7 +10,9 @@ const QuizPage = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [correctAnswer, setCorrectAnswer] = useState<string | null>(null);
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
-  const [correctAnswersCount, setCorrectAnswersCount] = useState(0); // Count of correct answers
+  const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
+  const [timer, setTimer] = useState(15); // Timer state
+  const [isTimeOut, setIsTimeOut] = useState(false); // To check if time is up
 
   useEffect(() => {
     if (numberOfQuestions && difficulty) {
@@ -26,6 +28,20 @@ const QuizPage = () => {
         .catch((err) => console.error(err));
     }
   }, [numberOfQuestions, difficulty]);
+
+  useEffect(() => {
+    let timerId: NodeJS.Timeout;
+
+    if (timer > 0 && !isTimeOut) {
+      timerId = setTimeout(() => setTimer(timer - 1), 1000);
+    } else if (timer === 0) {
+      setIsTimeOut(true);
+      // Automatically go to the next question when time runs out
+      nextQuestion();
+    }
+
+    return () => clearTimeout(timerId);
+  }, [timer, isTimeOut]);
 
   const handleAnswerClick = (answer: string) => {
     setSelectedAnswer(answer);
@@ -44,6 +60,8 @@ const QuizPage = () => {
       setCorrectAnswer(null);
       setShowCorrectAnswer(false);
       setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setTimer(15); // Reset timer for the next question
+      setIsTimeOut(false); // Reset time out state
     } else {
       // Pass the score to the score page
       router.push({
@@ -72,6 +90,8 @@ const QuizPage = () => {
         Score: {correctAnswersCount}/{currentQuestionIndex + 1}
       </p>{" "}
       {/* Display score */}
+      <p className="text-lg mb-4">Time Left: {timer} seconds</p>{" "}
+      {/* Display timer */}
       {currentQuestion.incorrect_answers
         .concat(currentQuestion.correct_answer)
         .map((answer, index) => (
