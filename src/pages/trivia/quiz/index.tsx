@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import Layout from "../../../components/Layout";
+import { useTheme } from "../../../ThemeContext";
 
 const QuizPage = () => {
   const router = useRouter();
@@ -11,8 +13,8 @@ const QuizPage = () => {
   const [correctAnswer, setCorrectAnswer] = useState<string | null>(null);
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
-  const [timer, setTimer] = useState(15); // Timer state
-  const [isTimeOut, setIsTimeOut] = useState(false); // To check if time is up
+  const [timer, setTimer] = useState(15);
+  const [isTimeOut, setIsTimeOut] = useState(false);
 
   useEffect(() => {
     if (numberOfQuestions && difficulty) {
@@ -36,7 +38,6 @@ const QuizPage = () => {
       timerId = setTimeout(() => setTimer(timer - 1), 1000);
     } else if (timer === 0) {
       setIsTimeOut(true);
-      // Automatically go to the next question when time runs out
       nextQuestion();
     }
 
@@ -47,8 +48,6 @@ const QuizPage = () => {
     setSelectedAnswer(answer);
     setCorrectAnswer(questions[currentQuestionIndex].correct_answer);
     setShowCorrectAnswer(true);
-
-    // Increment correct answers count if the answer is correct
     if (answer === questions[currentQuestionIndex].correct_answer) {
       setCorrectAnswersCount((prevCount) => prevCount + 1);
     }
@@ -60,10 +59,9 @@ const QuizPage = () => {
       setCorrectAnswer(null);
       setShowCorrectAnswer(false);
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setTimer(15); // Reset timer for the next question
-      setIsTimeOut(false); // Reset time out state
+      setTimer(15);
+      setIsTimeOut(false);
     } else {
-      // Pass the score to the score page
       router.push({
         pathname: "/trivia/score",
         query: { score: correctAnswersCount, total: questions.length },
@@ -78,7 +76,7 @@ const QuizPage = () => {
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+    <Layout>
       <h1 className="text-4xl font-bold mb-6">
         Question {currentQuestionIndex + 1}
       </h1>
@@ -88,10 +86,9 @@ const QuizPage = () => {
       />
       <p className="text-lg mb-4">
         Score: {correctAnswersCount}/{currentQuestionIndex + 1}
-      </p>{" "}
-      {/* Display score */}
-      <p className="text-lg mb-4">Time Left: {timer} seconds</p>{" "}
-      {/* Display timer */}
+      </p>
+      <p className="text-lg mb-4">Time Left: {timer} seconds</p>
+
       {currentQuestion.incorrect_answers
         .concat(currentQuestion.correct_answer)
         .map((answer, index) => (
@@ -105,12 +102,13 @@ const QuizPage = () => {
                 ? answer === correctAnswer
                   ? "bg-green-500"
                   : "bg-red-500"
-                : "bg-white text-blue-500 hover:bg-gray-200"
+                : "bg-gray-200 hover:bg-gray-300"
             }`}
           >
             <span dangerouslySetInnerHTML={{ __html: answer }} />
           </button>
         ))}
+
       {showCorrectAnswer && (
         <div className="mb-4">
           <p
@@ -126,15 +124,16 @@ const QuizPage = () => {
           </p>
         </div>
       )}
+
       {selectedAnswer && (
         <button
           onClick={nextQuestion}
-          className="px-6 py-2 bg-white text-blue-500 rounded-lg shadow-lg hover:bg-gray-200 transition"
+          className="px-6 py-2 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition"
         >
           {currentQuestionIndex < questions.length - 1 ? "Next" : "Finish Quiz"}
         </button>
       )}
-    </div>
+    </Layout>
   );
 };
 
