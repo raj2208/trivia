@@ -9,6 +9,8 @@ const QuizPage = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [correctAnswer, setCorrectAnswer] = useState<string | null>(null);
+  const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
+  const [correctAnswersCount, setCorrectAnswersCount] = useState(0); // Count of correct answers
 
   useEffect(() => {
     if (numberOfQuestions && difficulty) {
@@ -28,15 +30,26 @@ const QuizPage = () => {
   const handleAnswerClick = (answer: string) => {
     setSelectedAnswer(answer);
     setCorrectAnswer(questions[currentQuestionIndex].correct_answer);
+    setShowCorrectAnswer(true);
+
+    // Increment correct answers count if the answer is correct
+    if (answer === questions[currentQuestionIndex].correct_answer) {
+      setCorrectAnswersCount((prevCount) => prevCount + 1);
+    }
   };
 
   const nextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setSelectedAnswer(null);
       setCorrectAnswer(null);
+      setShowCorrectAnswer(false);
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      router.push("/trivia/score");
+      // Pass the score to the score page
+      router.push({
+        pathname: "/trivia/score",
+        query: { score: correctAnswersCount, total: questions.length },
+      });
     }
   };
 
@@ -55,7 +68,10 @@ const QuizPage = () => {
         className="mb-6"
         dangerouslySetInnerHTML={{ __html: currentQuestion.question }}
       />
-
+      <p className="text-lg mb-4">
+        Score: {correctAnswersCount}/{currentQuestionIndex + 1}
+      </p>{" "}
+      {/* Display score */}
       {currentQuestion.incorrect_answers
         .concat(currentQuestion.correct_answer)
         .map((answer, index) => (
@@ -75,7 +91,21 @@ const QuizPage = () => {
             <span dangerouslySetInnerHTML={{ __html: answer }} />
           </button>
         ))}
-
+      {showCorrectAnswer && (
+        <div className="mb-4">
+          <p
+            className={`text-lg ${
+              selectedAnswer === correctAnswer
+                ? "text-green-400"
+                : "text-red-400"
+            }`}
+          >
+            {selectedAnswer === correctAnswer
+              ? "Correct!"
+              : `Wrong! The correct answer is: ${currentQuestion.correct_answer}`}
+          </p>
+        </div>
+      )}
       {selectedAnswer && (
         <button
           onClick={nextQuestion}
