@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Layout from "../../../components/Layout";
-import { useTheme } from "../../../ThemeContext";
 
 const QuizPage = () => {
   const router = useRouter();
-  const { numberOfQuestions, difficulty } = router.query;
+  const { numberOfQuestions, difficulty, category, questionType } =
+    router.query;
 
   const [questions, setQuestions] = useState<any[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -13,13 +13,14 @@ const QuizPage = () => {
   const [correctAnswer, setCorrectAnswer] = useState<string | null>(null);
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
+  const [answeredQuestionsCount, setAnsweredQuestionsCount] = useState(0);
   const [timer, setTimer] = useState(15);
   const [isTimeOut, setIsTimeOut] = useState(false);
 
   useEffect(() => {
-    if (numberOfQuestions && difficulty) {
+    if (numberOfQuestions && difficulty && category) {
       fetch(
-        `https://opentdb.com/api.php?amount=${numberOfQuestions}&difficulty=${difficulty}&type=multiple`
+        `https://opentdb.com/api.php?amount=${numberOfQuestions}&difficulty=${difficulty}&category=${category}&type=${questionType}`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -29,7 +30,7 @@ const QuizPage = () => {
         })
         .catch((err) => console.error(err));
     }
-  }, [numberOfQuestions, difficulty]);
+  }, [numberOfQuestions, difficulty, category, questionType]);
 
   useEffect(() => {
     let timerId: NodeJS.Timeout;
@@ -48,6 +49,7 @@ const QuizPage = () => {
     setSelectedAnswer(answer);
     setCorrectAnswer(questions[currentQuestionIndex].correct_answer);
     setShowCorrectAnswer(true);
+    setAnsweredQuestionsCount((prevCount) => prevCount + 1);
     if (answer === questions[currentQuestionIndex].correct_answer) {
       setCorrectAnswersCount((prevCount) => prevCount + 1);
     }
@@ -64,7 +66,7 @@ const QuizPage = () => {
     } else {
       router.push({
         pathname: "/trivia/score",
-        query: { score: correctAnswersCount, total: questions.length },
+        query: { score: correctAnswersCount, total: answeredQuestionsCount },
       });
     }
   };
@@ -85,7 +87,7 @@ const QuizPage = () => {
         dangerouslySetInnerHTML={{ __html: currentQuestion.question }}
       />
       <p className="text-lg mb-4">
-        Score: {correctAnswersCount}/{currentQuestionIndex + 1}
+        Score: {correctAnswersCount}/{answeredQuestionsCount}
       </p>
       <p className="text-lg mb-4">Time Left: {timer} seconds</p>
 
